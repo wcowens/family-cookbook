@@ -1,5 +1,5 @@
-import { RecipeForm } from "@/components/recipe-form";
+import { redirect } from "next/navigation";
 
 export default function NewRecipePage() {
-  return <RecipeForm mode="create" />;
+  redirect("/recipes");
 }

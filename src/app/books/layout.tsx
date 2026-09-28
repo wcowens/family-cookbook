@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import { claimInvites } from "@/lib/books";
 import { getAuthUser } from "@/lib/auth";
 
-export default async function RecipesLayout({
+export default async function BooksLayout({
   children,
 }: {
   children: React.ReactNode;
@@ -12,6 +12,5 @@ export default async function RecipesLayout({
     redirect("/login");
   }
   await claimInvites();
-
   return children;
 }

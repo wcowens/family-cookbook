@@ -35,7 +35,8 @@ export default async function HomePage() {
         <ul className="space-y-3 text-lg leading-relaxed">
           <li>Add a recipe and say which relative it came from.</li>
           <li>List ingredients, quantities, and the kitchenware you need.</li>
-          <li>Search the family collection by recipe name.</li>
+          <li>Keep recipes in books and invite family to add their own.</li>
+          <li>Search a book by ingredient, or try a pasta word like rigatoni.</li>
           <li>Cook with big steps and check them off as you go.</li>
         </ul>
       </div>

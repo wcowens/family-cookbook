@@ -75,6 +75,7 @@ export async function signIn(
     return { error: "Those details did not match. Check your email and password." };
   }
 
+  await supabase.rpc("claim_book_invites");
   redirect("/recipes");
 }
 

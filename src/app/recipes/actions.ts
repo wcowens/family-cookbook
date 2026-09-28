@@ -33,6 +33,7 @@ export async function saveRecipe(
   const servings = String(formData.get("servings") ?? "").trim();
   const cookTime = String(formData.get("cookTime") ?? "").trim();
   const idValue = String(formData.get("id") ?? "").trim();
+  const bookId = String(formData.get("bookId") ?? "").trim();
 
   let ingredients: { quantity: string; name: string }[] = [];
   let kitchenware: { name: string }[] = [];
@@ -61,6 +62,9 @@ export async function saveRecipe(
     .map((item) => ({ instruction: String(item.instruction ?? "").trim() }))
     .filter((item) => item.instruction);
 
+  if (!bookId) {
+    return { error: "Choose a book for this recipe." };
+  }
   if (!title) {
     return { error: "Add a recipe name." };
   }
@@ -89,6 +93,7 @@ export async function saveRecipe(
   const supabase = await createClient();
   const { data, error } = await supabase.rpc("save_recipe", {
     p_id: idValue || null,
+    p_book_id: bookId,
     p_title: title,
     p_source_name: sourceName,
     p_servings: servings,
@@ -103,6 +108,35 @@ export async function saveRecipe(
   }
 
   revalidatePath("/recipes");
-  revalidatePath(`/recipes/${data}`);
-  redirect(`/recipes/${data}`);
+  revalidatePath(`/books/${bookId}`);
+  redirect(`/books/${bookId}?recipe=${data}`);
+}
+
+export async function deleteRecipe(formData: FormData) {
+  const user = await getAuthUser();
+  if (!user) {
+    redirect("/login");
+  }
+
+  const id = String(formData.get("id") ?? "").trim();
+  const bookId = String(formData.get("bookId") ?? "").trim();
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("recipes")
+    .select("user_id, book_id")
+    .eq("id", id)
+    .maybeSingle();
+
+  if (!data || data.user_id !== user.id) {
+    redirect(bookId ? `/books/${bookId}` : "/recipes");
+  }
+
+  const { error } = await supabase.from("recipes").delete().eq("id", id);
+  if (error) {
+    redirect(`/books/${data.book_id}?recipe=${id}`);
+  }
+
+  revalidatePath("/recipes");
+  revalidatePath(`/books/${data.book_id}`);
+  redirect(`/books/${data.book_id}`);
 }

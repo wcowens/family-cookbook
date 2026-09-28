@@ -13,6 +13,7 @@ const initialState: SaveState = {};
 export function RecipeForm({
   mode,
   recipeId,
+  bookId,
   title = "",
   sourceName = "",
   servings = "",
@@ -23,6 +24,7 @@ export function RecipeForm({
 }: {
   mode: "create" | "edit";
   recipeId?: string;
+  bookId: string;
   title?: string;
   sourceName?: string;
   servings?: string;
@@ -40,6 +42,7 @@ export function RecipeForm({
   return (
     <form action={formAction} className="space-y-8">
       {recipeId ? <input type="hidden" name="id" value={recipeId} /> : null}
+      <input type="hidden" name="bookId" value={bookId} />
       <input type="hidden" name="ingredients" value={JSON.stringify(ingredientRows)} />
       <input type="hidden" name="kitchenware" value={JSON.stringify(kitchenwareRows)} />
       <input type="hidden" name="steps" value={JSON.stringify(stepRows)} />
@@ -299,7 +302,7 @@ export function RecipeForm({
         <button type="submit" className="btn-primary" disabled={pending}>
           {pending ? "Saving..." : "Save recipe"}
         </button>
-        <Link href={recipeId ? `/recipes/${recipeId}` : "/recipes"} className="btn-secondary">
+        <Link href={recipeId ? `/books/${bookId}?recipe=${recipeId}` : `/books/${bookId}`} className="btn-secondary">
           Cancel
         </Link>
       </div>

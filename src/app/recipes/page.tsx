@@ -1,6 +1,7 @@
 import Link from "next/link";
-import { RecipeFacts } from "@/components/recipe-facts";
-import { listRecipes } from "@/lib/recipes";
+import { Bookshelf } from "@/components/bookshelf";
+import { claimInvites, listBooks, searchAllBooks } from "@/lib/books";
+import { getAuthUser } from "@/lib/auth";
 
 export default async function RecipeCollectionPage({
   searchParams,
@@ -9,72 +10,71 @@ export default async function RecipeCollectionPage({
 }) {
   const { q = "" } = await searchParams;
   const query = q.trim();
-  const recipes = await listRecipes(query);
+  await claimInvites();
+  const user = await getAuthUser();
+  const [books, matches] = await Promise.all([
+    listBooks(),
+    query ? searchAllBooks(query) : Promise.resolve([]),
+  ]);
 
   return (
-    <div className="space-y-8">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-        <div className="space-y-2">
-          <h1 className="font-serif text-4xl text-ink sm:text-5xl">Family recipes</h1>
-          <p className="max-w-xl text-lg text-muted">
-            Everyone who is signed in can browse the book. You can edit the recipes you add.
-          </p>
-        </div>
-        <Link href="/recipes/new" className="btn-primary">
-          Add recipe
-        </Link>
+    <div className="space-y-6">
+      <div className="space-y-2">
+        <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[#7a5a38]">
+          Welcome home
+        </p>
+        <h1 className="font-serif text-4xl text-[#3b2918] sm:text-5xl">Your bookshelf</h1>
+        <p className="max-w-xl text-lg text-[#5c4632]">
+          Pull a book from the shelf. Each spine is a cookbook you can open, share, and cook from.
+        </p>
       </div>
 
-      <form action="/recipes" className="card flex flex-col gap-3 sm:flex-row sm:items-end">
+      <form method="get" action="/recipes" className="card flex flex-col gap-3 sm:flex-row sm:items-end">
         <div className="w-full space-y-2">
-          <label htmlFor="recipe-search" className="field-label">
-            Search by recipe name
+          <label htmlFor="all-books-search" className="field-label">
+            Search all your cookbooks
           </label>
           <input
-            id="recipe-search"
+            id="all-books-search"
             name="q"
             defaultValue={query}
-            placeholder="pasta"
+            placeholder="taco, ramen, curry, rigatoni"
             className="field-input"
           />
         </div>
-        <button type="submit" className="btn-primary sm:mb-0">
+        <button type="submit" className="btn-primary">
           Search
         </button>
       </form>
 
-      {recipes.length === 0 ? (
-        <div className="card space-y-3">
-          <h2 className="font-serif text-2xl text-olive">
-            {query ? "No recipes matched that name" : "Your family book is ready for its first recipe"}
+      {query ? (
+        <section className="card space-y-3">
+          <h2 className="font-serif text-2xl">
+            {matches.length === 0 ? "No recipes matched" : `${matches.length} recipes`}
           </h2>
-          <p className="text-lg leading-relaxed text-muted">
-            {query
-              ? "Try a shorter word from the recipe name, or add it if it is not here yet."
-              : "Add a recipe you are learning. Include the ingredients, the kitchenware, and the steps so the next cook can follow along."}
-          </p>
-          <Link href="/recipes/new" className="btn-primary">
-            Add the first recipe
-          </Link>
-        </div>
-      ) : (
-        <ul className="grid gap-4 sm:grid-cols-2">
-          {recipes.map((recipe) => (
-            <li key={recipe.id}>
-              <Link
-                href={`/recipes/${recipe.id}`}
-                className="card block h-full transition hover:border-olive"
-              >
-                <h2 className="font-serif text-2xl text-ink">{recipe.title}</h2>
-                <p className="mt-2 text-lg text-muted">From {recipe.source_name}</p>
-                <div className="mt-4">
-                  <RecipeFacts servings={recipe.servings} cookTime={recipe.cook_time} />
-                </div>
-              </Link>
-            </li>
-          ))}
-        </ul>
-      )}
+          {matches.length === 0 ? (
+            <p className="text-muted">
+              Try another cuisine word, such as taco, sushi, soup, or pancake.
+            </p>
+          ) : (
+            <ul className="space-y-2">
+              {matches.map((recipe) => (
+                <li key={recipe.id}>
+                  <Link
+                    href={`/books/${recipe.book_id}?recipe=${recipe.id}`}
+                    className="block rounded-2xl border border-line px-4 py-3 hover:border-olive"
+                  >
+                    <span className="block font-serif text-xl">{recipe.title}</span>
+                    <span className="text-muted">In {recipe.book_name}</span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+      ) : null}
+
+      <Bookshelf books={books} userId={user?.id ?? ""} />
     </div>
   );
 }

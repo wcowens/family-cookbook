@@ -36,6 +36,7 @@ export default async function EditRecipePage({
       key={recipe.id}
       mode="edit"
       recipeId={recipe.id}
+      bookId={recipe.book_id}
       title={recipe.title}
       sourceName={recipe.source_name}
       servings={recipe.servings === "Not listed" ? "" : recipe.servings}
