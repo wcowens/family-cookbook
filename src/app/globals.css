@@ -1,0 +1,118 @@
+@import "tailwindcss";
+
+:root {
+  --paper: #f4efe6;
+  --card: #fffaf4;
+  --ink: #2a241c;
+  --muted: #5c5348;
+  --olive: #2f4d38;
+  --terracotta: #9d432c;
+  --line: #e3d6c4;
+}
+
+@theme inline {
+  --color-paper: var(--paper);
+  --color-card: var(--card);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-olive: var(--olive);
+  --color-terracotta: var(--terracotta);
+  --color-line: var(--line);
+  --font-sans: var(--font-source-sans);
+  --font-serif: var(--font-fraunces);
+}
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-source-sans), "Source Sans 3", sans-serif;
+}
+
+.font-serif {
+  font-family: var(--font-fraunces), Georgia, serif;
+}
+
+.btn-primary,
+.btn-secondary {
+  display: inline-flex;
+  min-height: 3rem;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  padding: 0.75rem 1.25rem;
+  text-align: center;
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.btn-primary {
+  background: var(--olive);
+  color: #fffaf4;
+}
+
+.btn-primary:hover {
+  background: #243d2b;
+}
+
+.btn-secondary {
+  border: 1px solid var(--line);
+  background: var(--card);
+  color: var(--ink);
+}
+
+.btn-secondary:hover {
+  border-color: var(--olive);
+}
+
+.btn-primary:disabled,
+.btn-secondary:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.btn-primary:focus-visible,
+.btn-secondary:focus-visible,
+.field-input:focus-visible,
+.cook-check:focus-visible {
+  outline: 3px solid var(--olive);
+  outline-offset: 2px;
+}
+
+.card {
+  border: 1px solid var(--line);
+  border-radius: 1.5rem;
+  background: var(--card);
+  padding: 1.25rem;
+  box-shadow: 0 10px 30px rgb(42 36 28 / 4%);
+}
+
+.field-label {
+  display: block;
+  font-size: 0.95rem;
+  font-weight: 650;
+}
+
+.field-input {
+  width: 100%;
+  min-height: 3rem;
+  border: 1px solid var(--line);
+  border-radius: 1rem;
+  background: white;
+  padding: 0.75rem 0.9rem;
+  font-size: 1rem;
+  color: var(--ink);
+}
+
+textarea.field-input {
+  min-height: 6rem;
+}
+
+.cook-check {
+  height: 1.75rem;
+  width: 1.75rem;
+  flex: none;
+  accent-color: var(--olive);
+}
